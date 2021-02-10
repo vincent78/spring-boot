@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.autoconfigure.http.codec;
 
 import java.lang.reflect.Method;
@@ -23,7 +24,6 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.codec.CodecProperties;
-import org.springframework.boot.autoconfigure.http.HttpProperties;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -43,7 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class CodecsAutoConfigurationTests {
 
-	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
+	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(CodecsAutoConfiguration.class));
 
 	@Test
@@ -59,7 +59,7 @@ class CodecsAutoConfigurationTests {
 
 	@Test
 	void loggingRequestDetailsCustomizerShouldUseHttpProperties() {
-		this.contextRunner.withPropertyValues("spring.http.log-request-details=true").run((context) -> {
+		this.contextRunner.withPropertyValues("spring.codec.log-request-details=true").run((context) -> {
 			CodecCustomizer customizer = context.getBean(CodecCustomizer.class);
 			CodecConfigurer configurer = new DefaultClientCodecConfigurer();
 			customizer.customize(configurer);
@@ -72,7 +72,7 @@ class CodecsAutoConfigurationTests {
 		this.contextRunner.run((context) -> {
 			Method customizerMethod = ReflectionUtils.findMethod(
 					CodecsAutoConfiguration.DefaultCodecsConfiguration.class, "defaultCodecCustomizer",
-					HttpProperties.class, CodecProperties.class);
+					CodecProperties.class);
 			Integer order = new TestAnnotationAwareOrderComparator().findOrder(customizerMethod);
 			assertThat(order).isEqualTo(0);
 		});

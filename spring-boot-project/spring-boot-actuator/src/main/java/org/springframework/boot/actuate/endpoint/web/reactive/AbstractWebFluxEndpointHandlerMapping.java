@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -163,6 +163,7 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		return reactiveWebOperation;
 	}
 
+	@SuppressWarnings("deprecation")
 	private RequestMappingInfo createRequestMappingInfo(WebOperation operation) {
 		WebOperationRequestPredicate predicate = operation.getRequestPredicate();
 		PatternsRequestCondition patterns = new PatternsRequestCondition(
@@ -176,6 +177,7 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		return new RequestMappingInfo(null, patterns, methods, null, null, consumes, produces, null);
 	}
 
+	@SuppressWarnings("deprecation")
 	private void registerLinksMapping() {
 		PatternsRequestCondition patterns = new PatternsRequestCondition(
 				pathPatternParser.parse(this.endpointMapping.getPath()));
@@ -361,8 +363,7 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 				return new ResponseEntity<>(response, HttpStatus.OK);
 			}
 			WebEndpointResponse<?> webEndpointResponse = (WebEndpointResponse<?>) response;
-			return new ResponseEntity<>(webEndpointResponse.getBody(),
-					HttpStatus.valueOf(webEndpointResponse.getStatus()));
+			return ResponseEntity.status(webEndpointResponse.getStatus()).body(webEndpointResponse.getBody());
 		}
 
 		@Override
@@ -375,7 +376,7 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 	/**
 	 * Handler for a {@link ReactiveWebOperation}.
 	 */
-	private final class WriteOperationHandler {
+	private static final class WriteOperationHandler {
 
 		private final ReactiveWebOperation operation;
 
@@ -394,7 +395,7 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 	/**
 	 * Handler for a {@link ReactiveWebOperation}.
 	 */
-	private final class ReadOperationHandler {
+	private static final class ReadOperationHandler {
 
 		private final ReactiveWebOperation operation;
 

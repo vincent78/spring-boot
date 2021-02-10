@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,6 +59,17 @@ class LiquibaseEndpointTests {
 			Map<String, LiquibaseBean> liquibaseBeans = context.getBean(LiquibaseEndpoint.class).liquibaseBeans()
 					.getContexts().get(context.getId()).getLiquibaseBeans();
 			assertThat(liquibaseBeans.get("liquibase").getChangeSets()).hasSize(1);
+		});
+	}
+
+	@Test
+	void liquibaseReportIsReturnedForContextHierarchy() {
+		this.contextRunner.withUserConfiguration().run((parent) -> {
+			this.contextRunner.withUserConfiguration(Config.class).withParent(parent).run((context) -> {
+				Map<String, LiquibaseBean> liquibaseBeans = context.getBean(LiquibaseEndpoint.class).liquibaseBeans()
+						.getContexts().get(parent.getId()).getLiquibaseBeans();
+				assertThat(liquibaseBeans.get("liquibase").getChangeSets()).hasSize(1);
+			});
 		});
 	}
 
@@ -152,7 +163,7 @@ class LiquibaseEndpointTests {
 
 		private DataSource createEmbeddedDatabase() {
 			return new EmbeddedDatabaseBuilder().generateUniqueName(true)
-					.setType(EmbeddedDatabaseConnection.HSQL.getType()).build();
+					.setType(EmbeddedDatabaseConnection.HSQLDB.getType()).build();
 		}
 
 		private SpringLiquibase createSpringLiquibase(String changeLog, DataSource dataSource) {
