@@ -31,8 +31,10 @@ rootProject.name="spring-boot-build"
 settings.gradle.projectsLoaded {
 	gradleEnterprise {
 		buildScan {
-			if (settings.gradle.rootProject.hasProperty('buildJavaHome')) {
-				value('Build Java home', settings.gradle.rootProject.getProperty('buildJavaHome'))
+			def toolchainVersion = settings.gradle.rootProject.findProperty('toolchainVersion')
+			if (toolchainVersion != null) {
+				value('Toolchain version', toolchainVersion)
+				tag("JDK-$toolchainVersion")
 			}
 
 			settings.gradle.rootProject.getBuildDir().mkdirs()
